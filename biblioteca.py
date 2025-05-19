@@ -141,3 +141,36 @@ class Biblioteca:
             self.conn.commit()
             return f"Llibre tornat. Dies en préstec: {dies}"
         return "El llibre no està en préstec."
+
+    def actualitzar_usuari(self, dni: str, nou_nom: str, nous_cognoms: str) -> str:
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM usuaris WHERE dni = ?", (dni,))
+        if cursor.fetchone() is None:
+            return "Usuari no trobat."
+        cursor.execute(
+            "UPDATE usuaris SET nom = ?, cognoms = ? WHERE dni = ?",
+            (nou_nom, nous_cognoms, dni)
+        )
+        self.conn.commit()
+        return "Usuari actualitzat."
+
+
+    def actualitzar_llibre(self, titol_actual: str, nou_titol: str, nou_autor: str) -> str:
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM llibres WHERE titol = ?", (titol_actual,))
+        if cursor.fetchone() is None:
+            return "Llibre no trobat."
+    
+        # Si el nou títol és diferent, s’ha d’eliminar i tornar a inserir
+        if titol_actual != nou_titol:
+            cursor.execute("DELETE FROM llibres WHERE titol = ?", (titol_actual,))
+            cursor.execute(
+                "INSERT INTO llibres (titol, autor, dni_prestec, data_prestec) VALUES (?, ?, NULL, NULL)",
+                (nou_titol, nou_autor)
+            )
+        else:
+            cursor.execute("UPDATE llibres SET autor = ? WHERE titol = ?", (nou_autor, titol_actual))
+    
+        self.conn.commit()
+        return "Llibre actualitzat."
+

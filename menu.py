@@ -14,6 +14,8 @@ def mostrar_menu():
     6. Eliminar llibre
     7. Prestar llibre
     8. Tornar llibre
+    9. Actualitzar usuari
+    10. Actualitzar llibre
     0. Sortir
     """)
 
@@ -58,10 +60,24 @@ while True:
         titol = input("Introdueix el títol del llibre a retornar: ")
         print(biblioteca.tornar_llibre(titol))
 
+    elif opcio == "9":
+        dni = input("Introdueix el DNI de l’usuari a actualitzar: ")
+        nou_nom = input("Nou nom: ")
+        nous_cognoms = input("Nous cognoms: ")
+        print(biblioteca.actualitzar_usuari(dni, nou_nom, nous_cognoms))
+
+    elif opcio == "10":
+        titol = input("Introdueix el títol del llibre a actualitzar: ")
+        nou_titol = input("Nou títol: ")
+        nou_autor = input("Nou autor: ")
+        print(biblioteca.actualitzar_llibre(titol, nou_titol, nou_autor))
+
     elif opcio == "0":
         print("Sortint...")
         break
 
     else:
         print("Opció no vàlida.")
-3
+
+   
+    
