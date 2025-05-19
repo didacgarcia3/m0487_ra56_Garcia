@@ -1,70 +1,86 @@
-# README.md
+# Biblioteca - Gestió de Llibres i Usuaris amb SQLite3
+Aquest projecte implementa una biblioteca digital que permet gestionar llibres i usuaris fent servir una base de dades SQLite3.
+Permet afegir, eliminar i llistar llibres i usuaris, així com gestionar préstecs i tornades de llibres.
 
-## 📚 Projecte: Biblioteca
+## Funcionalitats
+### Gestió de llibres:
 
-Aquest projecte en Python gestiona una biblioteca amb usuaris i llibres. Permet afegir, eliminar, llistar llibres i usuaris, així com gestionar préstecs de llibres per un màxim d’un mes i fins a 3 llibres per usuari.
+    -Afegir, llistar i eliminar llibres.
 
----
+    -Assignar un llibre en préstec a un usuari.
 
-### 🔧 Estructura del projecte
+    -Tornar un llibre a la biblioteca.
 
-```
-m0487_ra56_CognomAlumne/
-├── biblioteca.py        # Classe principal amb la gestió de la base de dades
-├── llibre.py            # Classe Llibre
-├── usuari.py            # Classe Usuari
-├── menu.py              # Menú de la biblioteca
-├── bbdd.sqlite3         # Base de dades SQLite
-├── test_biblioteca.py   # Tests unitaris (pendents d’implementar)
-└── README.md            # Aquest fitxer
-```
+### Gestió d'usuaris:
 
----
+    -Afegir, llistar i eliminar usuaris.
 
-### 🧪 Requisits
+### Ús de base de dades SQLite3:
 
-- Python 3.x
-- Mòduls: `sqlite3`, `datetime`, `re`
+    -Els llibres i usuaris es guarden a biblioteca.db.
+    -Les taules es creen automàticament si no existeixen.
+    -Es fan consultes SQL per gestionar la informació.
 
----
+### Control d'errors:
 
-### 🚀 Com executar
+    -Validació de dades amb try-except.
+    -Control d'errors per a DNIs repetits.
+    -Evita introduir dades incorrectes o buides.
 
-1. Clona el repositori:
-```bash
-git clone https://github.com/usuari/m0487_ra56_CognomAlumne.git
-cd m0487_ra56_CognomAlumne
-```
+### Instal·lació i ús
+    -Utilitzar un repositori github i Visual Studio Code
+    -Executa el programa: 
+        python biblioteca.py
+    -Segueix el menú per gestionar la biblioteca.
 
-2. Executa el programa:
-```bash
-python menu.py
-```
+### Base de dades SQLite3
+El programa fa servir una base de dades anomenada biblioteca.db amb dues taules principals:
 
----
+    -Taula usuaris
 
-### ✔️ Funcionalitats
+id	nom	cognoms	dni
+1	Paco	Ross	12345678A
+2	Maria	Tendas	87654321B
 
-- Afegir / eliminar / llistar usuaris
-- Afegir / eliminar / llistar llibres
-- Prestar llibres (fins a 3 per usuari i màxim 30 dies)
-- Tornar llibres i veure quants dies han estat en préstec
-- Validació de DNI (format espanyol)
+    -Taula llibres
 
----
+id	titol	autor	dni_prestec
+1	1984	Orwell	12345678A
+2	Dune	Herbert	0
+Si dni_prestec = "0", el llibre està disponible.
 
-### 🔍 Millores futures
+Si dni_prestec conté un DNI, el llibre està en préstec.
 
-- Validacions més estrictes de dades
-- Tests unitaris amb unittest
-- Control d’errors més complet
-- Interfície gràfica (opcional)
+### Menú principal
+Quan executes el programa, veuràs aquest menú:
 
----
+1) Llistar Llibres
+2) Introduir Llibres
+3) Eliminar Llibres
+4) Llistar Usuaris
+5) Introduir Usuaris
+6) Eliminar Usuaris
+7) Prèstec Llibres
+8) Tornar Llibres
+0) Sortir del programa
+    -Introdueix un número i segueix les instruccions.
 
-### 👨‍🏫 Autor
-*Dídac Garcia Molina*
+### Tecnologies utilitzades
+    -Python 3 
+    -SQLite3 
+    -Try-Except per control d'errors
+    -Unittest
 
-Repositori GitHub: [enllaç al repo]
+### Millores possibles:
+    -Actualitzar dades de llibre i usuaris.
+    -Que el dni compleixi el patró d'un DNI convencional.
+    -Tenir en compte el temps (màxim un mes) i la quantitat (màxim 3 llibres)
+    -Realitzar unittest per les diferents classes i metodes.
 
-Afegit com a col·laborador: `frossell@xtec.cat`
+    -Afegir una interfície gràfica amb Tkinter.
+    -Implementar una API REST amb FastAPI.
+    -Permetre exportar i importar dades a CSV o JSON.
+
+### Crèdits
+Creat per [Dídac Garcia Molina], 2025.
+[El Teu GitHub](https://github.com/didacgarcia3/m0487_ra56_Garcia.git)
