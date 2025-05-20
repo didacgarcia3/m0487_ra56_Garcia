@@ -1,12 +1,12 @@
 # menu.py
 from biblioteca import Biblioteca
 from llibre import Llibre
-from usuari import Usuari
+from usuari_registrat import UsuariRegistrat  # Només importa UsuariRegistrat
 
 def mostrar_menu():
     print("""
     --- Menú Biblioteca ---
-    1. Afegir usuari
+    1. Afegir usuari registrat
     2. Afegir llibre
     3. Llistar usuaris
     4. Llistar llibres
@@ -26,9 +26,13 @@ while True:
     opcio = input("Selecciona una opció: ")
 
     if opcio == "1":
-        usuari = Usuari()
-        usuari.introduir_dades()
-        print(biblioteca.afegir_usuari(usuari))
+        usuari = UsuariRegistrat()
+        usuari.introduir_dades()      # Demana nom, cognoms, dni, tipus_usuari
+        usuari.set_contrasenya()      # Demana contrasenya (emmascarada) i la xifra
+        if biblioteca.afegir_usuari(usuari):
+            print("Usuari registrat afegit correctament.")
+        else:
+            print("Error afegint usuari registrat.")
 
     elif opcio == "2":
         llibre = Llibre()
@@ -36,9 +40,7 @@ while True:
         print(biblioteca.afegir_llibre(llibre))
 
     elif opcio == "3":
-        usuaris = biblioteca.imprimir_usuaris()
-        for u in usuaris:
-            print(f"{u[0]} - {u[1]} {u[2]}")
+        biblioteca.imprimir_usuaris()
 
     elif opcio == "4":
         print(biblioteca.imprimir_llibres())
@@ -78,6 +80,3 @@ while True:
 
     else:
         print("Opció no vàlida.")
-
-   
-    

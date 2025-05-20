@@ -1,6 +1,7 @@
 # biblioteca.py
 import sqlite3
 from llibre import Llibre
+from usuari_registrat import UsuariRegistrat
 from usuari import Usuari
 from datetime import datetime, timedelta
 import re
@@ -41,11 +42,14 @@ class Biblioteca:
 
     def crear_taules(self):
         cursor = self.conn.cursor()
+        # Comprovar si cal afegir columnes noves
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS usuaris (
                 dni TEXT PRIMARY KEY,
                 nom TEXT,
-                cognoms TEXT
+                cognoms TEXT,
+                contrasenya TEXT,
+                tipus_usuari TEXT
             )
         ''')
         cursor.execute('''
@@ -58,13 +62,55 @@ class Biblioteca:
         ''')
         self.conn.commit()
 
-    def afegir_usuari(self, usuari: Usuari):
+
+    def afegir_usuari(self, usuari: Usuari) -> bool:
+        """
+        Afegeix un usuari a la base de dades després de validar el DNI i el tipus d'usuari.
+        Només accepta instàncies de UsuariRegistrat.
+        
+        Args:
+            usuari (Usuari): Objecte Usuari o UsuariRegistrat a afegir.
+
+        Retorna:
+            bool: True si l'usuari s'ha afegit correctament, False en cas contrari.
+        """
+        # Validació instància
+        if not isinstance(usuari, UsuariRegistrat):
+            print("Error: només es poden afegir usuaris registrats.")
+            return False
+        
+        # Validar tipus_usuari
+        if usuari.tipus_usuari not in ["lector", "admin"]:
+            print("Error: tipus_usuari ha de ser 'lector' o 'admin'.")
+            return False
+        
+        # Validar DNI amb regex
         if not re.match(r"^\d{8}[A-HJ-NP-TV-Z]$", usuari.dni):
-            return "DNI no vàlid."
+            print("Error: DNI no vàlid.")
+            return False
+        
+        # Aquí podríem afegir més validacions, com verificar que la contrasenya està definida
+        if usuari.get_contrasenya() is None:
+            print("Error: contrasenya no definida.")
+            return False
+        
         cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO usuaris VALUES (?, ?, ?)", (usuari.dni, usuari.nom, usuari.cognoms))
+        
+        # Comprovar que no existeix un usuari amb el mateix DNI
+        cursor.execute("SELECT * FROM usuaris WHERE dni = ?", (usuari.dni,))
+        if cursor.fetchone() is not None:
+            print("Error: l'usuari ja existeix.")
+            return False
+        
+        # Afegim l'usuari a la taula usuaris, ara incloent tipus_usuari i contrasenya (xifrada)
+        cursor.execute('''
+            INSERT INTO usuaris (dni, nom, cognoms, tipus_usuari, contrasenya)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (usuari.dni, usuari.nom, usuari.cognoms, usuari.tipus_usuari, usuari.get_contrasenya()))
+        
         self.conn.commit()
-        return "Usuari afegit."
+        return True
+
 
     def afegir_llibre(self, llibre: Llibre) -> str:
         cursor = self.conn.cursor()
@@ -79,8 +125,17 @@ class Biblioteca:
 
     def imprimir_usuaris(self):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM usuaris")
-        return cursor.fetchall()
+        cursor.execute("SELECT dni, nom, cognoms, tipus_usuari FROM usuaris")
+        usuaris = cursor.fetchall()
+    
+        if not usuaris:
+            print("No hi ha usuaris registrats.")
+            return
+    
+        print(f"{'DNI':<12} {'Nom':<15} {'Cognoms':<20} {'Tipus Usuari':<10}")
+        print("-" * 60)
+        for dni, nom, cognoms, tipus in usuaris:
+            print(f"{dni:<12} {nom:<15} {cognoms:<20} {tipus:<10}")
 
     def imprimir_llibres(self) -> str:
         cursor = self.conn.cursor()
