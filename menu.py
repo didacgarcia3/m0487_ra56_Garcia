@@ -118,6 +118,8 @@ def login(biblio: Biblioteca):
         usuari._contrasenya = contrasenya_guardada  # simulant accés protegit
         if usuari.verificar_contrasenya(contrasenya):
             print(f"\nBenvingut/da, {nom} ({tipus})!")
+            if dni == "00000000A":
+                print("⚠️ Estàs utilitzant l'usuari admin per defecte. Canvia la contrasenya per seguretat!")
             return usuari
         else:
             print("Contrasenya incorrecta.")
