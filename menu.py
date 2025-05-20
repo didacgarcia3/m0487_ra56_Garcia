@@ -1,82 +1,119 @@
-# menu.py
 from biblioteca import Biblioteca
-from llibre import Llibre
-from usuari_registrat import UsuariRegistrat  # Només importa UsuariRegistrat
+from usuari_registrat import UsuariRegistrat  
 
-def mostrar_menu():
-    print("""
-    --- Menú Biblioteca ---
-    1. Afegir usuari registrat
-    2. Afegir llibre
-    3. Llistar usuaris
-    4. Llistar llibres
-    5. Eliminar usuari
-    6. Eliminar llibre
-    7. Prestar llibre
-    8. Tornar llibre
-    9. Actualitzar usuari
-    10. Actualitzar llibre
-    0. Sortir
-    """)
+def mostrar_menu_admin():
+    print("\n--- Menú Administrador ---")
+    print("1. Afegir usuari")
+    print("2. Afegir llibre")
+    print("3. Llistar usuaris")
+    print("4. Llistar llibres")
+    print("5. Prestar llibre")
+    print("6. Tornar llibre")
+    print("7. Eliminar usuari")
+    print("8. Eliminar llibre")
+    print("9. Actualitzar usuari")
+    print("10. Actualitzar llibre")
+    print("0. Sortir")
 
-biblioteca = Biblioteca()
+def mostrar_menu_lector():
+    print("\n--- Menú Lector ---")
+    print("1. Llistar llibres")
+    print("2. Prestar llibre")
+    print("3. Tornar llibre")
+    print("0. Sortir")
 
-while True:
-    mostrar_menu()
-    opcio = input("Selecciona una opció: ")
+def login(biblio: Biblioteca):
+    print("== LOGIN ==")
+    dni = input("DNI: ")
+    contrasenya = input("Contrasenya: ")
 
-    if opcio == "1":
-        usuari = UsuariRegistrat()
-        usuari.introduir_dades()      # Demana nom, cognoms, dni, tipus_usuari
-        usuari.set_contrasenya()      # Demana contrasenya (emmascarada) i la xifra
-        if biblioteca.afegir_usuari(usuari):
-            print("Usuari registrat afegit correctament.")
+    cursor = biblio.conn.cursor()
+    cursor.execute("SELECT nom, cognoms, contrasenya, tipus_usuari FROM usuaris WHERE dni = ?", (dni,))
+    resultat = cursor.fetchone()
+
+    if resultat:
+        nom, cognoms, contrasenya_guardada, tipus = resultat
+        usuari = UsuariRegistrat(nom=nom, cognoms=cognoms, dni=dni, tipus_usuari=tipus)
+        usuari._contrasenya = contrasenya_guardada  # simulant accés protegit
+        if usuari.verificar_contrasenya(contrasenya):
+            print(f"\nBenvingut/da, {nom} ({tipus})!")
+            return usuari
         else:
-            print("Error afegint usuari registrat.")
-
-    elif opcio == "2":
-        llibre = Llibre()
-        llibre.introduir_dades()
-        print(biblioteca.afegir_llibre(llibre))
-
-    elif opcio == "3":
-        biblioteca.imprimir_usuaris()
-
-    elif opcio == "4":
-        print(biblioteca.imprimir_llibres())
-
-    elif opcio == "5":
-        dni = input("Introdueix el DNI de l’usuari a eliminar: ")
-        print(biblioteca.eliminar_usuari(dni))
-
-    elif opcio == "6":
-        titol = input("Introdueix el títol del llibre a eliminar: ")
-        print(biblioteca.eliminar_llibre(titol))
-
-    elif opcio == "7":
-        titol = input("Introdueix el títol del llibre: ")
-        dni = input("Introdueix el DNI de l’usuari: ")
-        print(biblioteca.prestar_llibre(titol, dni))
-
-    elif opcio == "8":
-        titol = input("Introdueix el títol del llibre a retornar: ")
-        print(biblioteca.tornar_llibre(titol))
-
-    elif opcio == "9":
-        dni = input("Introdueix el DNI de l’usuari a actualitzar: ")
-        nou_nom = input("Nou nom: ")
-        nous_cognoms = input("Nous cognoms: ")
-        print(biblioteca.actualitzar_usuari(dni, nou_nom, nous_cognoms))
-
-    elif opcio == "10":
-        titol = input("Introdueix el títol del llibre a actualitzar: ")
-        nou_titol = input("Nou títol: ")
-        nou_autor = input("Nou autor: ")
-        print(biblioteca.actualitzar_llibre(titol, nou_titol, nou_autor))
-
-    elif opcio == "0":
-        print("Sortint...")
-        break
-
+            print("Contrasenya incorrecta.")
     else:
-        print("Opció no vàlida.")
+        print("Usuari no trobat.")
+    return None
+
+# Programa principal
+if __name__ == "__main__":
+    biblio = Biblioteca()
+    usuari = None
+
+    while not usuari:
+        usuari = login(biblio)
+
+    while True:
+        if usuari.tipus_usuari == "admin":
+            mostrar_menu_admin()
+            opcio = input("Selecciona una opció: ")
+            if opcio == "1":
+                nou = UsuariRegistrat()
+                nou.introduir_dades()
+                nou.set_contrasenya()
+                if biblio.afegir_usuari(nou):
+                    print("Usuari afegit.")
+            elif opcio == "2":
+                from llibre import Llibre
+                titol = input("Títol: ")
+                autor = input("Autor: ")
+                llibre = Llibre(titol, autor)
+                print(biblio.afegir_llibre(llibre))
+            elif opcio == "3":
+                biblio.imprimir_usuaris()
+            elif opcio == "4":
+                print(biblio.imprimir_llibres())
+            elif opcio == "5":
+                titol = input("Títol del llibre: ")
+                dni = input("DNI del lector: ")
+                print(biblio.prestar_llibre(titol, dni))
+            elif opcio == "6":
+                titol = input("Títol del llibre: ")
+                print(biblio.tornar_llibre(titol))
+            elif opcio == "7":
+                dni = input("DNI de l’usuari a eliminar: ")
+                print(biblio.eliminar_usuari(dni))
+            elif opcio == "8":
+                titol = input("Títol del llibre a eliminar: ")
+                print(biblio.eliminar_llibre(titol))
+            elif opcio == "9":
+                dni = input("DNI de l’usuari: ")
+                nom = input("Nou nom: ")
+                cognoms = input("Nous cognoms: ")
+                print(biblio.actualitzar_usuari(dni, nom, cognoms))
+            elif opcio == "10":
+                titol = input("Títol actual del llibre: ")
+                nou_titol = input("Nou títol: ")
+                nou_autor = input("Nou autor: ")
+                print(biblio.actualitzar_llibre(titol, nou_titol, nou_autor))
+            elif opcio == "0":
+                print("Sortint... Adéu!")
+                break
+            else:
+                print("Opció no vàlida.")
+        
+        elif usuari.tipus_usuari == "lector":
+            mostrar_menu_lector()
+            opcio = input("Selecciona una opció: ")
+            if opcio == "1":
+                print(biblio.imprimir_llibres())
+            elif opcio == "2":
+                titol = input("Títol del llibre: ")
+                print(biblio.prestar_llibre(titol, usuari.dni))
+            elif opcio == "3":
+                titol = input("Títol del llibre: ")
+                print(biblio.tornar_llibre(titol))
+            elif opcio == "0":
+                print("Sortint... Adéu!")
+                break
+            else:
+                print("Opció no vàlida.")
