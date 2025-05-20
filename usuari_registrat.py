@@ -20,18 +20,18 @@ class UsuariRegistrat(Usuari):
     Representa un usuari registrat a la biblioteca.
 
     Atributs:
-        _contrasenya (str): Contrasenya encriptada (protegit).
+        _contrasenya (str): Contrasenya encriptada (variable protegida).
         tipus_usuari (str): Tipus d'usuari ('lector' o 'admin').
 
     Mètodes:
-        set_contrasenya(): Demana la contrasenya oculta, l'encripta i la guarda.
+        set_contrasenya(): Demana la contrasenya de forma oculta, l'encripta i la guarda.
         verificar_contrasenya(password): Retorna True si la contrasenya és correcta.
         encriptar_contrasenya(password): Retorna el hash SHA-256 de la contrasenya.
-        introduir_dades(): Demana dades bàsiques i el tipus d'usuari.
+        introduir_dades(): Demana les dades bàsiques i el tipus d'usuari.
     """
 
-    def __init__(self, nom="None", cognoms="None", dni="None", tipus_usuari="lector"):
-        super().__init__(nom, cognoms, dni)
+    def __init__(self, tipus_usuari="lector", **kwargs):
+        super().__init__(**kwargs)  # Reutilitza el constructor de la classe base
         if tipus_usuari.lower() in ("lector", "admin"):
             self.tipus_usuari = tipus_usuari.lower()
         else:
@@ -52,7 +52,6 @@ class UsuariRegistrat(Usuari):
             else:
                 print("Les contrasenyes no coincideixen. Torna-ho a intentar.")
 
-
     def get_contrasenya(self):
         return self._contrasenya
 
@@ -68,8 +67,4 @@ class UsuariRegistrat(Usuari):
             self.tipus_usuari = tipus
         else:
             self.tipus_usuari = "lector"
-        # Nota: No demanem contrasenya aquí per evitar peticions no desitjades
-        # Posa contrasenya després amb set_contrasenya() quan calgui.
-        
-    def get_contrasenya(self):
-        return self._contrasenya
+        # Es recomana posar contrasenya després amb set_contrasenya()
