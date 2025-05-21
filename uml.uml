@@ -1,0 +1,22 @@
+@startuml
+actor Admin
+actor Lector
+
+Admin --> (Login)
+Lector --> (Login)
+
+Admin --> (Afegir usuari)
+Admin --> (Afegir llibre)
+Admin --> (Llistar usuaris)
+Admin --> (Llistar llibres)
+Admin --> (Eliminar usuari)
+Admin --> (Eliminar llibre)
+Admin --> (Actualitzar usuari)
+Admin --> (Actualitzar llibre)
+Admin --> (Prestar llibre)
+Admin --> (Tornar llibre)
+
+Lector --> (Veure llibres)
+Lector --> (Consultar llibres prestats)
+Lector --> (Tornar llibre)
+@enduml
