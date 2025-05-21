@@ -76,7 +76,9 @@ class Biblioteca:
             print("Error: l'usuari ja existeix.")
             return False
 
-        contrasenya_xifrada = self.hashear_contrasenya(usuari.get_contrasenya())
+        # ❗️No volver a encriptar la contrasenya
+        contrasenya_xifrada = usuari.get_contrasenya()
+
         cursor.execute('''
             INSERT INTO usuaris (dni, nom, cognoms, tipus_usuari, contrasenya)
             VALUES (?, ?, ?, ?, ?)
@@ -84,6 +86,8 @@ class Biblioteca:
 
         self.conn.commit()
         return True
+
+        
 
     def canviar_contrasenya(self, dni, contrasenya_nova):
         cursor = self.conn.cursor()
